@@ -1,0 +1,87 @@
+define THIS_AS = {{ this_asn }};
+define ROUTER_IP = {{ hostvars[inventory_hostname].internal_ip }};
+define THIS_NET = {{ this_cidr }};
+define NETWORKS = [{{ this_cidr }}+];
+
+router id ROUTER_IP;
+
+protocol device {
+  scan time 10;
+}
+
+function is_self_net() {
+  return net ~ NETWORKS;
+}
+
+function is_valid_network() {
+  return net ~ [
+    172.20.0.0/14{21,29}, # dn42
+    172.20.0.0/24{28,32}, # dn42 Anycast
+    172.21.0.0/24{28,32}, # dn42 Anycast
+    172.22.0.0/24{28,32}, # dn42 Anycast
+    172.23.0.0/24{28,32}, # dn42 Anycast
+    172.31.0.0/16+,       # ChaosVPN
+    10.100.0.0/14+,       # ChaosVPN
+    10.127.0.0/16{16,32}, # neonetwork
+    10.0.0.0/8{15,24}     # Freifunk.net
+  ];
+}
+
+roa4 table dn42_roa;
+
+protocol static {
+  roa4 { table dn42_roa; };
+  include "{{ bird_roa_ipv4_file }}";
+};
+
+protocol kernel {
+  scan time 20;
+
+  ipv4 {
+      import none;
+      export filter {
+        if source = RTS_STATIC then reject;
+        krt_prefsrc = ROUTER_IP;
+        accept;
+      };
+  };
+}
+
+protocol static {
+    route THIS_NET reject;
+
+    ipv4 {
+        import all;
+        export none;
+    };
+}
+
+template bgp dnpeers {
+  local as THIS_AS;
+  path metric 1;
+
+  ipv4 {
+      import filter {
+        if is_self_net() then {
+          reject;
+        }
+
+        if !is_valid_network() then {
+          print "invalid network";
+          reject;
+        }
+
+        if (roa_check(dn42_roa, net, bgp_path.last) != ROA_VALID) then {
+          print "[dn42] ROA check failed for ", net, " ASN ", bgp_path.last;
+          reject;
+        }
+        
+        accept;
+      };
+
+      export filter { if is_valid_network() && source ~ [RTS_STATIC, RTS_BGP] then accept; else reject; };
+      import limit 1000 action block;
+  };
+}
+
+include "/etc/bird/peers/*.conf";

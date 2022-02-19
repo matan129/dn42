@@ -1,0 +1,24 @@
+---
+internal_ip: 172.23.178.97
+peerings:
+  kioubit_de:
+    remote_addr: 172.20.53.97
+    asn: 4242423914
+    wireguard_tunnel:
+      listen_port: 51820
+      peer_pub_key: B1xSG/XTJRLd+GrWDsB06BqnIq8Xud93YVh/LYYYtUY=
+      peer_endpoint: de2.g-load.eu:20906
+  tech9_de:
+    remote_addr: 172.20.16.141
+    asn: 4242421588
+    wireguard_tunnel:
+      listen_port: 51821
+      peer_pub_key: MD1EdVe9a0yycUdXCH3A61s3HhlDn17m5d07e4H33S0=
+      peer_endpoint: de-fra02.dn42.tech9.io:55148
+  lutoma_de:
+    remote_addr: 172.22.119.1
+    asn: 64719
+    wireguard_tunnel:
+      listen_port: 5149
+      peer_pub_key: u5TF30232tOCvRogi/70Rp6TpiJagPWPmVMIKIVQ4yE=
+      peer_endpoint: de-fra.dn42.lutoma.org:42411

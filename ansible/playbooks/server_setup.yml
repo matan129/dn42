@@ -1,0 +1,6 @@
+---
+- hosts: all
+  roles:
+    - role: harden_ssh
+    - role: configure_dn42_dns
+    - role: configure_dn42_ca

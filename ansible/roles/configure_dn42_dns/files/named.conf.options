@@ -1,0 +1,8 @@
+options {
+    directory "/var/cache/bind";
+    dnssec-validation auto;
+    listen-on-v6 { any; };
+
+    // Skip DNSSEC on DN42
+    validate-except { dn42; };
+};

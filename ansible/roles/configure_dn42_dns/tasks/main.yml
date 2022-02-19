@@ -1,0 +1,39 @@
+---
+- name: Install Packages
+  apt:
+    update_cache: yes
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - bind9
+    - resolvconf
+
+- name: Enable Services
+  service:
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - named
+    - resolvconf
+
+- name: Point DNS to local
+  copy:
+    src: resolvconf_head
+    dest: /etc/resolvconf/resolv.conf.d/head
+
+- name: Configure Bind9
+  copy:
+    src: "{{ item }}"
+    dest: /etc/bind/
+  with_items:
+    - named.conf.local
+    - named.conf.options
+
+- name: Restart Services
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: restarted
+  with_items:
+    - named
+    - resolvconf

@@ -1,0 +1,8 @@
+---
+- name: Configure sysctl
+  template:
+    src: 99_dn42_sysctl.conf
+    dest: /etc/sysctl.d/
+
+- name: Apply sysctl settings
+  command: sysctl -p

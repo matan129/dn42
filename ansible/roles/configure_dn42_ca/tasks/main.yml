@@ -1,0 +1,14 @@
+---
+- name: Create DN42 CA Directory
+  file:
+    path: /usr/local/share/ca-certificates/dn42
+    state: directory
+  register: dn42_ca_dir
+
+- name: Copy the root DN42 certificate
+  copy:
+    src: root_dn42.crt
+    dest: "{{ dn42_ca_dir.path }}/"
+
+- name: Update CA Certificates
+  command: update-ca-certificates

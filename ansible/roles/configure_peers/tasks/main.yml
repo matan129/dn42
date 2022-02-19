@@ -1,0 +1,84 @@
+---
+ - name: Generate Main Bird Config
+   template:
+     src: bird.conf.j2
+     dest: /etc/bird/bird.conf
+
+ - name: Create Bird Peer Directory
+   file:
+     path: /etc/bird/peers
+     state: directory
+
+ - name: Empty Bird Peers Directory
+   file:
+     state: "{{ item }}"
+     path: /etc/bird/peers
+   with_items:
+     - absent
+     - directory
+
+ - name: Generate Peers Bird Config
+   template:
+     src: bird_peer.conf.j2
+     dest: "/etc/bird/peers/{{ item.key }}.conf"
+   with_dict: "{{ hostvars[inventory_hostname].peerings }}"
+
+ - name: Empty Wireguard Directory
+   file:
+     state: "{{ item }}"
+     path: /etc/wireguard/
+   with_items:
+     - absent
+     - directory
+
+ - name: Generate Wireguard Config
+   template:
+     src: wg_tunnel.conf.j2
+     dest: "/etc/wireguard/dn42_{{ item.key }}.conf"
+   with_dict: "{{ hostvars[inventory_hostname].peerings }}"
+   when: "'wireguard_tunnel' in item.value.keys()"
+
+ - name: Gather service state
+   service_facts:
+   register: services_state
+
+ - name: Stop Live Wireguard Services
+   service:
+     name: "{{ item }}"
+     state: stopped
+   with_items: "{{ ansible_facts.services.keys() | select('match', '^wg-quick@dn42_.*$') }}"
+
+ - name: Disable Live Wireguard Services
+   service:
+     name: "{{ item }}"
+     enabled: no
+   with_items: "{{ ansible_facts.services.keys() | select('match', '^wg-quick@dn42_.*$') }}"
+
+ - name: Start Wireguard
+   service:
+     name: "wg-quick@dn42_{{ item.key }}"
+     state: started
+     enabled: yes
+   with_dict: "{{ hostvars[inventory_hostname].peerings }}"
+   when: "'wireguard_tunnel' in item.value.keys()"
+
+ - name: Create Bird ROA Directory
+   file:
+     path: "{{ bird_roa_dir }}"
+     state: directory
+
+ - name: Generate ROA Once
+   command: "wget -q -O {{ bird_roa_ipv4_file }} https://dn42.burble.com/roa/dn42_roa_bird2_4.conf"
+
+ - name: Restart Bird
+   service:
+     name: bird
+     state: restarted
+     enabled: yes
+
+ - name: Generate ROA Cron
+   cron:
+     user: root
+     name: roa_ipv4
+     minute: "*/10"
+     job: "wget -q -O {{ bird_roa_ipv4_file }} https://dn42.burble.com/roa/dn42_roa_bird2_4.conf && /usr/sbin/birdc configure"

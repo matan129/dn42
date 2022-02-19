@@ -1,0 +1,14 @@
+---
+- name: Apt Update
+  apt:
+    update_cache: yes
+
+- name: Install Packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - bird2
+    - wireguard
+    - moreutils
+    - net-tools

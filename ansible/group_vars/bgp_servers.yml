@@ -1,0 +1,3 @@
+---
+bird_roa_dir: /var/bird/roa
+bird_roa_ipv4_file: "{{ bird_roa_dir }}/roa_dn42_ipv4.conf"

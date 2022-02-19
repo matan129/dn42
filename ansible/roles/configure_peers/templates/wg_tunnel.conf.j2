@@ -1,0 +1,10 @@
+[Interface]
+PrivateKey = {{ wg_private_key }}
+ListenPort = {{ item.value.wireguard_tunnel.listen_port }}
+PostUp = /bin/ip addr add dev %i {{  internal_ip }}/32 peer {{ item.value.remote_addr }}/32
+Table = off
+
+[Peer]
+PublicKey = {{ item.value.wireguard_tunnel.peer_pub_key }}
+Endpoint = {{ item.value.wireguard_tunnel.peer_endpoint }}
+AllowedIPs = {{ dn42_cidrs }}

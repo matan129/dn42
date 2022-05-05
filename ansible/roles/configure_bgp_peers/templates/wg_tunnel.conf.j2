@@ -5,6 +5,9 @@ PostUp = /bin/ip addr add dev %i {{  internal_ip }}/32 peer {{ item.value.remote
 Table = off
 
 [Peer]
+{% if item.value.wireguard_tunnel.peer_preshared_key is defined %}
+PresharedKey = {{ item.value.wireguard_tunnel.peer_preshared_key }}
+{% endif %}
 PublicKey = {{ item.value.wireguard_tunnel.peer_pub_key }}
 Endpoint = {{ item.value.wireguard_tunnel.peer_endpoint }}
 AllowedIPs = {{ dn42_cidrs }}

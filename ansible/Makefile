@@ -21,7 +21,7 @@ write-vault-password: .vault_pass
 
 .PHONY: print-pubkeys
 print-pubkeys: write-vault-password
-	ansible bgp_servers -m debug -a "msg={{ wg_private_key }}" | grep msg | awk '{ print $$2 }' | tr -d '"' | wg pubkey
+	@ansible bgp_servers -m debug -a "msg={{ wg_private_key }}" | grep msg | awk '{ print $$2 }' | tr -d '"' | wg pubkey
 
 .PHONY: encrypt-string
 encrypt-string: write-vault-password

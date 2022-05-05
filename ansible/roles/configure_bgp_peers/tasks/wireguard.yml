@@ -13,6 +13,7 @@
     dest: "/etc/wireguard/dn42_{{ item.key }}.conf"
   with_dict: "{{ hostvars[inventory_hostname].peerings }}"
   when: "'wireguard_tunnel' in item.value.keys()"
+  tags: adding_peers
 
 - name: Gather service state
   service_facts:
@@ -37,3 +38,4 @@
     enabled: yes
   with_dict: "{{ hostvars[inventory_hostname].peerings }}"
   when: "'wireguard_tunnel' in item.value.keys()"
+  tags: adding_peers

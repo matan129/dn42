@@ -22,9 +22,11 @@
      src: bird_peer.conf.j2
      dest: "/etc/bird/peers/{{ item.key }}.conf"
    with_dict: "{{ hostvars[inventory_hostname].peerings }}"
+   tags: adding_peers
 
  - name: Setup Wireguard
    include_tasks: wireguard.yml
+   tags: adding_peers
 
  - name: Setup ROA
    include_tasks: roa.yml
@@ -34,3 +36,7 @@
      name: bird
      state: restarted
      enabled: yes
+
+ - name: Reconfigure Bird
+   shell: "birdc configure"
+   tags: adding_peers

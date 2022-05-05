@@ -22,3 +22,10 @@ peerings:
       listen_port: 5149
       peer_pub_key: u5TF30232tOCvRogi/70Rp6TpiJagPWPmVMIKIVQ4yE=
       peer_endpoint: de-fra.dn42.lutoma.org:42411
+  iedon_de:
+    remote_addr: 172.23.91.125
+    asn: 4242422189
+    wireguard_tunnel:
+      listen_port: 51822
+      peer_pub_key: FHp0OR4UpAS8/Ra0FUNffTk18soUYCa6NcvZdOgxY0k=
+      peer_endpoint: de-fra.dn42.kuu.moe:54803

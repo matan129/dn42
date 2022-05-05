@@ -31,7 +31,7 @@ roa4 table dn42_roa;
 
 protocol static {
   roa4 { table dn42_roa; };
-  include "{{ bird_roa_ipv4_file }}";
+  include "{{ bird2_roa_ipv4_file }}";
 };
 
 protocol kernel {

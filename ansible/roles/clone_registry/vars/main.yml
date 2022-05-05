@@ -1,0 +1,3 @@
+---
+dn42_registry_private_ssh_key_path: "/var/dn42/ssh/dn42_deploy"
+dn42_registry_known_hosts_path: "/var/dn42/ssh/dn42_registry_known_hosts"

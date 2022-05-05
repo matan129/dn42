@@ -1,0 +1,21 @@
+---
+ - name: Create Bird ROA Directory
+   file:
+     path: "{{ bird2_roa_dir }}"
+     state: directory
+
+ - name: Copy ROA Generator Script
+   copy:
+     src: generate_roa_ipv4.sh
+     dest: "{{ bird2_roa_ipv4_generator_script_path }}"
+     mode: "a+x"
+
+ - name: Generate ROA Once
+   command: "{{ bird2_roa_ipv4_generator_command }}"
+
+ - name: Generate ROA Cron
+   cron:
+     user: root
+     name: roa_ipv4
+     minute: "*/10"
+     job: "{{ bird2_roa_ipv4_generator_command }} && /usr/sbin/birdc configure"

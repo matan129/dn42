@@ -3,4 +3,5 @@
   roles:
     - role: install_bgp_server
     - role: configure_sysctl
-    - role: configure_peers
+    - role: clone_registry
+    - role: configure_bgp_peers

@@ -1,0 +1,43 @@
+---
+ - name: Create Directories
+   file:
+     path: "{{ item | dirname }}"
+     state: directory
+   with_items:
+     - "{{ dn42_registry_repo_path }}"
+     - "{{ dn42_registry_private_ssh_key_path }}"
+
+ - name: Copy DN42 SSH Key
+   copy:
+     src: dn42_deploy
+     dest: "{{ dn42_registry_private_ssh_key_path }}"
+     mode: "400"
+
+ - name: Copy DN42 Known Hosts
+   copy:
+     src: known_hosts
+     dest: "{{ dn42_registry_known_hosts_path }}"
+
+ - name: Install StormSSH Python Package
+   pip:
+     name: stormssh  # required by community.general.ssh_config
+
+ - name: SSH Config
+   community.general.ssh_config:
+     host: git.dn42.dev
+     identity_file: "{{ dn42_registry_private_ssh_key_path }}"
+     user_known_hosts_file: "{{ dn42_registry_known_hosts_path }}"
+
+ - name: Clone Registry
+   git:
+     repo: "git@git.dn42.dev:dn42/registry.git"
+     dest: "{{ dn42_registry_repo_path }}"
+     single_branch: yes
+     depth: 1
+
+ - name: Generate Registry Update Cron
+   cron:
+     user: root
+     name: update_dn42_registry
+     minute: "*/5"
+     job: "cd {{ dn42_registry_repo_path }} && git fetch --depth 1 && git reset --hard origin/master && git clean -fdx"

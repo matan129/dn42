@@ -12,3 +12,16 @@
     - wireguard
     - moreutils
     - net-tools
+    - python3-pip
+    - exa
+    - tree
+    - ipcalc-ng
+
+- name: Add ls=exa alias
+  lineinfile:
+    path: /root/.bash_aliases
+    line: "alias ls=exa"
+    regexp: "^alias ls=exa$"
+    state: present
+    insertafter: EOF
+    create: yes

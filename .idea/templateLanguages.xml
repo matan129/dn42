@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="TemplateDataLanguageMappings">
-    <file url="file://$PROJECT_DIR$/ansible/roles/configure_peers/templates" dialect="Python" />
+    <file url="file://$PROJECT_DIR$/ansible/roles/configure_bgp_peers/templates" dialect="Python" />
     <file url="PROJECT" dialect="Python" />
   </component>
 </project>

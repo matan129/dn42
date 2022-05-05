@@ -10,8 +10,8 @@
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/ansible/roles/configure_peers/templates" />
         <option value="$MODULE_DIR$/ansible/roles/configure_sysctl/templates" />
+        <option value="$MODULE_DIR$/ansible/roles/configure_bgp_peers/templates" />
       </list>
     </option>
   </component>

@@ -78,4 +78,9 @@
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.8 (Helicon2Kindle)" project-jdk-type="Python SDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
+  <component name="SwUserDefinedSpecifications">
+    <option name="specTypeByUrl">
+      <map />
+    </option>
+  </component>
 </project>

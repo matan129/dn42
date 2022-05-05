@@ -1,0 +1,36 @@
+---
+ - name: Generate Main Bird Config
+   template:
+     src: bird.conf.j2
+     dest: /etc/bird/bird.conf
+
+ - name: Create Bird Peer Directory
+   file:
+     path: /etc/bird/peers
+     state: directory
+
+ - name: Empty Bird Peers Directory
+   file:
+     state: "{{ item }}"
+     path: /etc/bird/peers
+   with_items:
+     - absent
+     - directory
+
+ - name: Generate Peers Bird Config
+   template:
+     src: bird_peer.conf.j2
+     dest: "/etc/bird/peers/{{ item.key }}.conf"
+   with_dict: "{{ hostvars[inventory_hostname].peerings }}"
+
+ - name: Setup Wireguard
+   include_tasks: wireguard.yml
+
+ - name: Setup ROA
+   include_tasks: roa.yml
+
+ - name: Restart Bird
+   service:
+     name: bird
+     state: restarted
+     enabled: yes

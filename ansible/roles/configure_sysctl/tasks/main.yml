@@ -1,6 +1,6 @@
 ---
 - name: Configure sysctl
-  template:
+  copy:
     src: 99_dn42_sysctl.conf
     dest: /etc/sysctl.d/
 

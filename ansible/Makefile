@@ -1,4 +1,4 @@
-BASE_ANSIBLE_PLAYBOOK_COMMAND	:= ansible-playbook --private-key ~/.ssh/scaleway_dn42
+BASE_ANSIBLE_PLAYBOOK_COMMAND	:= ansible-playbook $(ANSIBLE_PLAYBOOK_ARGS)
 ANSIBLE_PLAYBOOK_EXTRA_ARGS		:=
 
 .PHONY: add-bgp-peers
@@ -17,7 +17,7 @@ e2e: write-vault-password
 write-vault-password: .vault_pass
 
 .vault_pass:
-	lpass show --password "matan129@gmail.com/DN42/DN42 Ansible Vault" > .vault_pass
+	$(VAULT_PASS_COMMAND) > .vault_pass
 
 .PHONY: print-pubkeys
 print-pubkeys: write-vault-password

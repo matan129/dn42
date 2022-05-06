@@ -17,7 +17,7 @@ e2e: write-vault-password
 write-vault-password: .vault_pass
 
 .vault_pass:
-	$(VAULT_PASS_COMMAND) > .vault_pass
+	@$(VAULT_PASS_COMMAND) > .vault_pass
 
 .PHONY: print-pubkeys
 print-pubkeys: write-vault-password

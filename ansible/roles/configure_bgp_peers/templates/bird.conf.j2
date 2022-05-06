@@ -84,4 +84,4 @@ template bgp dnpeers {
   };
 }
 
-include "/etc/bird/peers/*.conf";
+include "{{ bird2_peers_conf_dir }}/*.conf";

@@ -1,4 +1,5 @@
 ---
+bird2_peers_conf_dir: /etc/bird/peers
 bird2_roa_dir: /var/bird/roa
 bird2_roa_ipv4_file: "{{ bird2_roa_dir }}/roa_dn42_ipv4.conf"
 bird2_roa_ipv4_generator_script_path: "{{ bird2_roa_dir }}/generate_roa_ipv4.sh"

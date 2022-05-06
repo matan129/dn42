@@ -6,6 +6,7 @@
   with_items:
     - absent
     - directory
+  tags: adding_peers
 
 - name: Generate Wireguard Config
   template:
@@ -18,18 +19,21 @@
 - name: Gather service state
   service_facts:
   register: services_state
+  tags: adding_peers
 
 - name: Stop Live Wireguard Services
   service:
     name: "{{ item }}"
     state: stopped
   with_items: "{{ ansible_facts.services.keys() | select('match', '^wg-quick@dn42_.*$') }}"
+  tags: adding_peers
 
 - name: Disable Live Wireguard Services
   service:
     name: "{{ item }}"
     enabled: no
   with_items: "{{ ansible_facts.services.keys() | select('match', '^wg-quick@dn42_.*$') }}"
+  tags: adding_peers
 
 - name: Start Wireguard
   service:

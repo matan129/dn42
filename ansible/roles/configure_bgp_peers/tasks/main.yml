@@ -4,23 +4,19 @@
      src: bird.conf.j2
      dest: /etc/bird/bird.conf
 
- - name: Create Bird Peer Directory
-   file:
-     path: /etc/bird/peers
-     state: directory
-
  - name: Empty Bird Peers Directory
    file:
      state: "{{ item }}"
-     path: /etc/bird/peers
+     path: "{{ bird2_peers_conf_dir }}"
    with_items:
      - absent
      - directory
+   tags: adding_peers
 
  - name: Generate Peers Bird Config
    template:
      src: bird_peer.conf.j2
-     dest: "/etc/bird/peers/{{ item.key }}.conf"
+     dest: "{{ bird2_peers_conf_dir }}/{{ item.key }}.conf"
    with_dict: "{{ hostvars[inventory_hostname].peerings }}"
    tags: adding_peers
 

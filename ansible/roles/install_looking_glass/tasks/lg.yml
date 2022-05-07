@@ -3,7 +3,7 @@
   pip:
     name: docker
 
-- name: Start bird-lgproxy
+- name: Start bird-lg Proxy
   include_role:
     name: mhutter.docker-systemd-service
   vars:

@@ -28,11 +28,11 @@
     container_env:
       BIRDLG_LISTEN: "127.0.0.1:5000"
       BIRDLG_SERVERS: "{{ 
-                groups['bgp_servers'] | map('extract', hostvars, 'looking_glass_display_name') 
-          | zip(groups['bgp_servers'] | map('extract', hostvars, 'internal_ip'))
-          | map('format', '{}<{}>')
-          | join(',')
-        }}"
+          groups['bgp_servers'] 
+        | map('multi_extract', hostvars, ['looking_glass_display_name', 'internal_ip'])
+        | map('format', '{}<{}>')
+        | join(',')         
+      }}"
       BIRDLG_TITLE_BRAND: "PASTEN-NET Looking Glass"
       BIRDLG_NAVBAR_BRAND: "PASTEN-NET Looking Glass"
       BIRDLG_NET_SPECIFIC_MODE: "dn42"

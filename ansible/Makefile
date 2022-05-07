@@ -1,7 +1,7 @@
 BASE_ANSIBLE_PLAYBOOK_COMMAND	:= ansible-playbook $(ANSIBLE_PLAYBOOK_ARGS)
 ANSIBLE_PLAYBOOK_EXTRA_ARGS		:=
 
-PLAYBOOK_TARGETS				:= $(shell ls playbooks/*.yml | sed 's|playbooks/||g' | sed 's|.yml||g')
+PLAYBOOK_TARGETS				:= $(shell ls playbooks/*.yml | sed -E 's/playbooks\/|\.yml//g')
 
 # Ugly marco to have proper completions for the available make targets
 define add_play_target
@@ -13,11 +13,11 @@ $(foreach p, $(PLAYBOOK_TARGETS), $(eval $(call add_play_target, play-$(p), .pla
 
 .PHONY: .play-%
 .play-%: write-vault-password
-	$(BASE_ANSIBLE_PLAYBOOK_COMMAND) playbooks/$*.yml
+	$(BASE_ANSIBLE_PLAYBOOK_COMMAND) $(ANSIBLE_PLAYBOOK_EXTRA_ARGS) playbooks/$*.yml
 
-.PHONY: add-bgp-peers
-add-bgp-peers: ANSIBLE_PLAYBOOK_EXTRA_ARGS=--tags adding_peers
-add-bgp-peers: .play-bgp
+.PHONY: play-add-bgp-peers
+play-add-bgp-peers: ANSIBLE_PLAYBOOK_EXTRA_ARGS=--tags adding_peers
+play-add-bgp-peers: .play-bgp
 
 .PHONY: print-pubkeys
 print-pubkeys: write-vault-password

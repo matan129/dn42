@@ -3,25 +3,21 @@ ANSIBLE_PLAYBOOK_EXTRA_ARGS		:=
 
 PLAYBOOK_TARGETS				:= $(shell ls playbooks/*.yml | sed 's|playbooks/||g' | sed 's|.yml||g')
 
-$(foreach p, $(PLAYBOOK_TARGETS), $(eval play-$(p): .play-$(p)))
+# Ugly marco to have proper completions for the available make targets
+define add_play_target
+.PHONY: ${1}
+${1}: ${2}
+endef
+
+$(foreach p, $(PLAYBOOK_TARGETS), $(eval $(call add_play_target, play-$(p), .play-$(p))))
 
 .PHONY: .play-%
 .play-%: write-vault-password
 	$(BASE_ANSIBLE_PLAYBOOK_COMMAND) playbooks/$*.yml
 
-.PHONY: list-playbooks
-list-playbooks:
-	@echo $(PLAYBOOK_TARGETS)
-
 .PHONY: add-bgp-peers
 add-bgp-peers: ANSIBLE_PLAYBOOK_EXTRA_ARGS=--tags adding_peers
 add-bgp-peers: .play-bgp
-
-.PHONY: write-vault-password
-write-vault-password: .vault_pass
-
-.vault_pass:
-	@$(VAULT_PASS_COMMAND) > .vault_pass
 
 .PHONY: print-pubkeys
 print-pubkeys: write-vault-password
@@ -34,3 +30,9 @@ encrypt-string: write-vault-password
 .PHONY: encrypt-file
 encrypt-file: write-vault-password
 	ansible-vault encrypt --encrypt-vault-id default $(file)
+
+.PHONY: write-vault-password
+write-vault-password: .vault_pass
+
+.vault_pass:
+	@$(VAULT_PASS_COMMAND) > .vault_pass

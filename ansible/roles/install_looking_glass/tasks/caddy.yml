@@ -1,0 +1,39 @@
+---
+- name: Install Dependencies
+  apt:
+    name: "{{ item }}"
+    update_cache: no
+  with_items:
+    - debian-keyring
+    - debian-archive-keyring
+    - apt-transport-https
+
+- name: Add Caddy's Apt Key
+  apt_key:
+    url: "https://dl.cloudsmith.io/public/caddy/stable/gpg.key"
+    state: present
+
+- name: Add Caddy's Apt repo
+  apt_repository:
+    repo: "{{ item }}"
+    filename: caddy
+    state: present
+    update_cache: no
+  with_items:
+    - "deb https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main"
+    - "deb-src https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main"
+
+- name: Install Caddy
+  apt:
+    name: caddy
+    update_cache: yes
+
+- name: Install Caddyfile
+  template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+
+- name: Reload Caddy
+  service:
+    name: caddy
+    state: reloaded

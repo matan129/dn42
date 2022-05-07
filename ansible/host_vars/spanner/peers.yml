@@ -1,5 +1,4 @@
 ---
-internal_ip: 172.23.178.97
 peerings:
   kioubit_de:
     remote_addr: 172.20.53.97

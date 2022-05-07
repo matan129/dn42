@@ -1,0 +1,6 @@
+---
+- name: Configure Containers
+  include_tasks: lg.yml
+
+- name: Configure Caddy Reverse Proxy
+  include_tasks: caddy.yml

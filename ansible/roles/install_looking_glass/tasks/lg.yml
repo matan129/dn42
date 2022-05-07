@@ -1,0 +1,33 @@
+---
+- name: Install Python-Docker on the host
+  pip:
+    name: docker
+
+- name: Start bird-lgproxy
+  include_role:
+    name: mhutter.docker-systemd-service
+  vars:
+    name: lg_proxy
+    container_name: lg_proxy
+    container_image: xddxdd/bird-lgproxy-go:latest
+    container_host_network: yes  # needed to get accurate traceroute results, etc.
+    container_volumes:
+      - '/var/run/bird:/var/run/bird'
+    container_env:
+      BIRDLG_LISTEN: "127.0.0.1:8000"
+
+- name: Start bird-lg Frontend
+  include_role:
+    name: mhutter.docker-systemd-service
+  vars:
+    name: lg_frontend
+    container_name: lg_frontend
+    container_image: xddxdd/bird-lg-go:latest
+    container_host_network: yes  # simplest way to access the proxy for now
+    container_env:
+      BIRDLG_LISTEN: "127.0.0.1:5000"
+      BIRDLG_SERVERS: "Spanner (DE)<127.0.0.1>"
+      BIRDLG_TITLE_BRAND: "PASTEN-NET Looking Glass"
+      BIRDLG_NAVBAR_BRAND: "PASTEN-NET Looking Glass"
+      BIRDLG_NET_SPECIFIC_MODE: "dn42"
+      BIRDLG_PROTOCOL_FILTER: "bgp"

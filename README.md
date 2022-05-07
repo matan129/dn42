@@ -2,6 +2,8 @@
 
 This repo contains tooling to set up my DN42 AS, AS4242420906 (aka `PASTEN-NET`).
 
+[**Looking Glass**](https://lg.dn42.matan.cloud)
+
 The stack is -
 
 * Bird2
@@ -9,6 +11,7 @@ The stack is -
 * ROA checks, periodically updated
 * Full support for DN42 HTTPS
 * Full support for DN42 DNS with Bind9
+* Looking Glass ([bird-lg-go](https://github.com/xddxdd/bird-lg-go) by xddxdd) + [Caddy](https://caddyserver.com/) reverse proxy with [Let's Encrypt](https://letsencrypt.org/) TLS
 
 Unsupported things for now:
 * IPv6

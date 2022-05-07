@@ -1,0 +1,4 @@
+---
+- hosts: bgp_servers
+  roles:
+    - role: install_looking_glass

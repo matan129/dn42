@@ -1,0 +1,59 @@
+# {{ ansible_managed }}
+{% macro params(name, vals) %}
+{% for v in vals %}{{ name }} {{ v }} {% endfor %}
+{% endmacro %}
+{% set service_systemd_options_keys = service_systemd_options | selectattr("key") | map(attribute="key") | list %}
+[Unit]
+After=docker.service
+PartOf=docker.service
+Requires=docker.service
+
+[Service]
+{% for item in service_systemd_options %}
+{{ item['key'] }}={{ item['value'] }}
+{% endfor %}
+{% if container_env is defined %}
+{% if not 'EnvironmentFile' in service_systemd_options_keys %}
+EnvironmentFile={{ sysconf_dir }}/{{ container_name }}
+{% endif %}
+{% endif %}
+{% if not 'ExecStartPre' in service_systemd_options_keys %}
+ExecStartPre=-{{ docker_path }} rm -f {{ container_name }}
+{% endif %}
+{% if not 'ExecStart' in service_systemd_options_keys %}
+ExecStart={{ docker_path }} run \
+  --name {{ container_name }} \
+  --rm \
+  {% if container_env is defined %}--env-file {{ sysconf_dir }}/{{ container_name }} {% endif %}\
+  {{ params('--volume', container_volumes) }}\
+  {% if container_host_network == true %}--network host {% else %}{{ params('--publish', container_ports) }}{% endif %}\
+  {% if container_network %}--network {{ container_network }}{% endif %} \
+  {{ params('--link', container_links) }}\
+  {{ params('--label', container_labels) }}\
+  {{ params('--cap-add', container_cap_add) }}\
+  {{ params('--cap-drop', container_cap_drop) }}\
+  {{ params('--device', container_devices) }}\
+  {% if container_privileged == true %}--privileged{% endif %}\
+  {{ container_args | trim }} \
+  {{ container_image }} {% if container_cmd is string %}{{ container_cmd | trim }}{% else %}{{ container_cmd | join(' ') | trim }}{% endif %}
+{% endif %}
+
+{% if not 'ExecStop' in service_systemd_options_keys %}
+ExecStop={{ docker_path }} stop {{ container_name }}
+{% endif %}
+{% if container_start_post is defined %}
+ExecStartPost=-{{ container_start_post }}
+{% endif %}
+
+{% if not 'SyslogIdentifier' in service_systemd_options_keys %}
+SyslogIdentifier={{ container_name }}
+{% endif %}
+{% if not 'Restart' in service_systemd_options_keys %}
+Restart=always
+{% endif %}
+{% if not 'RestartSec' in service_systemd_options_keys %}
+RestartSec=10s
+{% endif %}
+
+[Install]
+WantedBy=docker.service

@@ -1,0 +1,25 @@
+---
+container_name: "{{ name }}"
+container_docker_pull: true
+container_docker_pull_force_source: true
+container_labels: []
+container_cmd: []
+container_host_network: false
+container_network: ""
+container_links: []
+container_ports: []
+container_volumes: []
+container_cap_add: []
+container_cap_drop: []
+container_devices: []
+container_privileged: false
+container_args: ""
+docker_path: "/usr/bin/docker"
+service_name: "{{ container_name }}_container"
+service_systemd_options: []
+service_enabled: true
+service_masked: false
+service_state: started
+service_restart: true
+template_env_path: "env.j2"
+template_unit_path: "unit.j2"

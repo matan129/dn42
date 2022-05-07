@@ -1,0 +1,36 @@
+---
+- name: Create ENV file for {{ service_name }}.service
+  template:
+    src: "{{ template_env_path }}"
+    dest: "{{ sysconf_dir }}/{{ container_name }}"
+    owner: root
+    group: root
+    mode: '0600'
+  when: container_env is defined
+  notify: restart container {{ container_name }}
+
+- name: Pull image {{ container_image }}
+  docker_image:
+    name: '{{ container_image }}'
+    force_source: '{{ container_docker_pull_force_source | bool }}'
+    source: pull
+  when: container_docker_pull
+  notify: restart container {{ container_name }}
+
+- name: Create unit {{ service_name }}.service
+  template:
+    src: "{{ template_unit_path }}"
+    dest: /etc/systemd/system/{{ service_name }}.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart container {{ container_name }}
+
+- name: Enable and start {{ container_name }}
+  systemd:
+    name: '{{ service_name }}.service'
+    daemon_reload: true
+    enabled: "{{ service_enabled }}"
+    masked: "{{ service_masked }}"
+    state: "{{ service_state }}"
+  register: enable_and_start

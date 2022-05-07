@@ -2,3 +2,9 @@
 - hosts: bgp_servers
   roles:
     - role: install_looking_glass
+
+- hosts: looking_glass
+  roles:
+    - role: install_looking_glass
+      vars:
+        with_lg_frontend: yes

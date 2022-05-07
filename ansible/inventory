@@ -3,3 +3,7 @@ bgp_servers:
     hosts:
         spanner:
             ansible_host: spanner.dn42.matan.cloud
+
+looking_glass:
+    hosts:
+        spanner

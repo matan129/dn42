@@ -14,7 +14,8 @@
     container_volumes:
       - '/var/run/bird:/var/run/bird'
     container_env:
-      BIRDLG_LISTEN: "127.0.0.1:8000"
+      BIRDLG_LISTEN: "{{ internal_ip }}:8000"
+      ALLOWED_IPS: "{{ groups['looking_glass'] | map('extract', hostvars, 'internal_ip') | join(',') }}"
 
 - name: Start bird-lg Frontend
   include_role:
@@ -26,8 +27,14 @@
     container_host_network: yes  # simplest way to access the proxy for now
     container_env:
       BIRDLG_LISTEN: "127.0.0.1:5000"
-      BIRDLG_SERVERS: "Spanner (DE)<127.0.0.1>"
+      BIRDLG_SERVERS: "{{ 
+                groups['bgp_servers'] | map('extract', hostvars, 'looking_glass_display_name') 
+          | zip(groups['bgp_servers'] | map('extract', hostvars, 'internal_ip'))
+          | map('format', '{}<{}>')
+          | join(',')
+        }}"
       BIRDLG_TITLE_BRAND: "PASTEN-NET Looking Glass"
       BIRDLG_NAVBAR_BRAND: "PASTEN-NET Looking Glass"
       BIRDLG_NET_SPECIFIC_MODE: "dn42"
       BIRDLG_PROTOCOL_FILTER: "bgp"
+  when: with_lg_frontend

@@ -37,9 +37,8 @@ Use `ansible-vault` to encrypt the private keys.
 ### [Makefile](https://github.com/matan129/dn42/blob/master/ansible/Makefile) Targets
 
 BGP:
-* `bgp` - sets up the BGP peers.
+* `play-<PLAYBOOK NAME>` - see each playbook for reference
 * `add-bgp-peers` - runs `bgp`, but skips tasks that are not needed only when adding new peers.
-* `e2e` - does everything (installations + BGP) 
 
 Utils:
 * `print-pubkeys` - extracts the Wireguard public keys from the `wg_private_key` hostvar (i.e. [wireguard.yml](https://github.com/matan129/dn42/blob/master/ansible/host_vars/spanner/wireguard.yml)).

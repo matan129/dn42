@@ -1,17 +1,21 @@
 BASE_ANSIBLE_PLAYBOOK_COMMAND	:= ansible-playbook $(ANSIBLE_PLAYBOOK_ARGS)
 ANSIBLE_PLAYBOOK_EXTRA_ARGS		:=
 
+PLAYBOOK_TARGETS				:= $(shell ls playbooks/*.yml | sed 's|playbooks/||g' | sed 's|.yml||g')
+
+$(foreach p, $(PLAYBOOK_TARGETS), $(eval play-$(p): .play-$(p)))
+
+.PHONY: .play-%
+.play-%: write-vault-password
+	$(BASE_ANSIBLE_PLAYBOOK_COMMAND) playbooks/$*.yml
+
+.PHONY: list-playbooks
+list-playbooks:
+	@echo $(PLAYBOOK_TARGETS)
+
 .PHONY: add-bgp-peers
 add-bgp-peers: ANSIBLE_PLAYBOOK_EXTRA_ARGS=--tags adding_peers
-add-bgp-peers: bgp
-
-.PHONY: bgp
-bgp: write-vault-password
-	$(BASE_ANSIBLE_PLAYBOOK_COMMAND) $(ANSIBLE_PLAYBOOK_EXTRA_ARGS) playbooks/bgp.yml
-
-.PHONY: e2e
-e2e: write-vault-password
-	$(BASE_ANSIBLE_PLAYBOOK_COMMAND) $(ANSIBLE_PLAYBOOK_EXTRA_ARGS) playbooks/e2e.yml
+add-bgp-peers: .play-bgp
 
 .PHONY: write-vault-password
 write-vault-password: .vault_pass

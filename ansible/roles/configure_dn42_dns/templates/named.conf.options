@@ -5,4 +5,8 @@ options {
 
     // Skip DNSSEC on DN42
     validate-except { dn42; };
+
+    // Setup as recursive resolver
+    recursion yes;
+    allow-query { {{ this_cidr }}; };
 };

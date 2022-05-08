@@ -1,6 +1,7 @@
 [Interface]
 PrivateKey = {{ wg_private_key }}
 ListenPort = {{ item.value.wireguard_tunnel.listen_port }}
+Address = {{ internal_ip }}
 
 [Peer]
 {% if item.value.wireguard_tunnel.peer_preshared_key is defined %}

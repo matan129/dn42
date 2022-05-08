@@ -1,5 +1,5 @@
 ---
-peerings:
+peers:
   kioubit_de:
     remote_addr: 172.20.53.97
     asn: 4242423914

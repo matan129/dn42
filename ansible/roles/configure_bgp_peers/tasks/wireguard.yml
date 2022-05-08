@@ -3,14 +3,14 @@
   import_role:
     name: cleanup_wireguard
   vars:
-    wg_conf_list: "{{ peerings.keys() | list }}"
+    wg_conf_list: "{{ peers.keys() | list }}"
     wg_prefix: "{{ wireguard_peer_prefix }}"
 
 - name: Generate Wireguard Configs
   template:
     src: wg_tunnel.conf.j2
     dest: "{{ wireguard_conf_dir }}/{{ wireguard_peer_prefix }}{{ item.key }}.conf"
-  with_dict: "{{ peerings }}"
+  with_dict: "{{ peers }}"
   when: "'wireguard_tunnel' in item.value.keys()"
   register: generated_wireguard_configs
 

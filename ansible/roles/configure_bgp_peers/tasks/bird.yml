@@ -14,7 +14,7 @@
   template:
     src: bird_peer.conf.j2
     dest: "{{ bird2_peers_conf_dir }}/{{ item.key }}.conf"
-  with_dict: "{{ peerings }}"
+  with_dict: "{{ peers }}"
   notify: Reconfigure Bird
 
 - name: Enumerate Peers
@@ -29,6 +29,6 @@
   with_items: "{{ 
       existing_peers.files 
     | map(attribute='path') 
-    | difference(peerings | map('format', bird2_peers_conf_dir + '/{}.conf')) 
+    | difference(peers | map('format', bird2_peers_conf_dir + '/{}.conf')) 
   }}"
   notify: Reconfigure Bird

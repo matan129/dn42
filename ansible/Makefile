@@ -1,7 +1,7 @@
-BASE_ANSIBLE_PLAYBOOK_COMMAND	:= ansible-playbook $(ANSIBLE_PLAYBOOK_ARGS)
-ANSIBLE_PLAYBOOK_EXTRA_ARGS		:=
+BASE_ANSIBLE_PLAYBOOK_COMMAND   := ansible-playbook $(ANSIBLE_PLAYBOOK_ARGS)
+ANSIBLE_PLAYBOOK_EXTRA_ARGS     :=
 
-PLAYBOOK_TARGETS				:= $(shell ls playbooks/*.yml | sed -E 's/playbooks\/|\.yml//g')
+PLAYBOOK_TARGETS                := $(shell ls playbooks/*.yml | sed -E 's/playbooks\/|\.yml//g')
 
 # Ugly marco to have proper completions for the available make targets
 define add_play_target

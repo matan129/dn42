@@ -21,13 +21,15 @@
     src: resolvconf_head
     dest: /etc/resolvconf/resolv.conf.d/head
 
-- name: Configure Bind9
+- name: Configure Bind9 Options
+  template:
+    src: named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+
+- name: Configure Bind9 DN42 Zone
   copy:
-    src: "{{ item }}"
+    src: named.conf.local
     dest: /etc/bind/
-  with_items:
-    - named.conf.local
-    - named.conf.options
 
 - name: Restart Services
   service:

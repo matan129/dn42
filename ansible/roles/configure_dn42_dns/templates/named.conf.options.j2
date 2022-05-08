@@ -8,5 +8,8 @@ options {
 
     // Setup as recursive resolver
     recursion yes;
-    allow-query { {{ this_cidr }}; };
+    allow-query {
+        localhost;
+        {{ this_cidr }};
+    };
 };

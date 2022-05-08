@@ -1,0 +1,56 @@
+---
+- name: Check Vars
+  assert:
+    that:
+      - wg_prefix is defined
+      - wg_conf_list is defined
+
+- name: Create Wireguard Directory
+  file:
+    state: directory
+    path: "{{ wireguard_conf_dir }}"
+
+- name: Gather Service State
+  service_facts:
+  register: services_state
+
+- name: Enumerate Unknown Wireguard Services
+  set_fact:
+    unknown_wg_services: "{{ 
+        ansible_facts.services.keys() 
+      | select('match', '^wg-quick@' + wg_prefix + '.*$') 
+      | difference(wg_conf_list | map('format', 'wg-quick@' + wg_prefix + '{}.service'))
+    }}"
+
+- name: Stop Unknown Wireguard Services
+  service:
+    name: "{{ item }}"
+    state: stopped
+  with_items: "{{ unknown_wg_services }}"
+
+- name: Disable Unknown Wireguard Services
+  service:
+    name: "{{ item }}"
+    enabled: no
+  with_items: "{{ unknown_wg_services }}"
+
+- name: Reset Failure Status for Removed Services
+  shell: "systemctl reset-failed {{ item }}"
+  with_items: "{{ unknown_wg_services }}"
+
+- name: Enumerate Wireguard Configs
+  find:
+    paths: "{{ wireguard_conf_dir }}"
+  register: wireguard_configs
+
+- name: Remove Unknown Wireguard Configs
+  file:
+    path: "{{ wireguard_conf_dir }}/{{ item }}"
+    state: absent
+  with_items: "{{ 
+      wireguard_configs.files 
+    | map(attribute='path') 
+    | map('basename')
+    | select('match', '^' + wg_prefix + '.*$')
+    | difference(wg_conf_list | map('format', wg_prefix + '{}.conf')) 
+  }}"

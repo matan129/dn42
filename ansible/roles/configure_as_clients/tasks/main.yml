@@ -1,52 +1,10 @@
 ---
-- name: Create Wireguard Directory
-  file:
-    state: directory
-    path: "{{ wireguard_conf_dir }}"
-
-- name: Gather Service State
-  service_facts:
-  register: services_state
-
-- name: Enumerate Unknown Wireguard Services
-  set_fact:
-    unknown_wg_services: "{{ 
-        ansible_facts.services.keys() 
-      | select('match', '^wg-quick@' + wireguard_client_prefix + '.*$') 
-      | difference(clients.keys() | map('format', 'wg-quick@' + wireguard_client_prefix + '{}.service'))
-    }}"
-
-- name: Stop Unknown Wireguard Services
-  service:
-    name: "{{ item }}"
-    state: stopped
-  with_items: "{{ unknown_wg_services }}"
-
-- name: Disable Unknown Wireguard Services
-  service:
-    name: "{{ item }}"
-    enabled: no
-  with_items: "{{ unknown_wg_services }}"
-
-- name: Reset Failure Status for Removed Services
-  shell: "systemctl reset-failed {{ item }}"
-  with_items: "{{ unknown_wg_services }}"
-
-- name: Enumerate Wireguard Configs
-  find:
-    paths: "{{ wireguard_conf_dir }}"
-  register: wireguard_configs
-
-- name: Remove Unknown Wireguard Configs
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items: "{{ 
-      wireguard_configs.files 
-    | map(attribute='path') 
-    | select('match', '.*' + wireguard_client_prefix + '.*')
-    | difference(clients.keys() | map('format', wireguard_conf_dir + '/' + wireguard_client_prefix + '{}.conf')) 
-  }}"
+- name: Cleanup Wireguard
+  import_role:
+    name: cleanup_wireguard
+  vars:
+    wg_conf_list: "{{ clients.keys() | list }}"
+    wg_prefix: "{{ wireguard_client_prefix }}"
 
 - name: Generate Wireguard Configs
   template:

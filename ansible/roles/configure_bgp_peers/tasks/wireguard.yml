@@ -1,45 +1,65 @@
 ---
-- name: Empty Wireguard Directory
+- name: Create Wireguard Directory
   file:
-    state: "{{ item }}"
-    path: /etc/wireguard/
-  with_items:
-    - absent
-    - directory
-  tags: adding_peers
+    state: directory
+    path: "{{ wireguard_conf_dir }}"
 
-- name: Generate Wireguard Config
-  template:
-    src: wg_tunnel.conf.j2
-    dest: "/etc/wireguard/dn42_{{ item.key }}.conf"
-  with_dict: "{{ hostvars[inventory_hostname].peerings }}"
-  when: "'wireguard_tunnel' in item.value.keys()"
-  tags: adding_peers
-
-- name: Gather service state
+- name: Gather Service State
   service_facts:
   register: services_state
-  tags: adding_peers
 
-- name: Stop Live Wireguard Services
+- name: Enumerate Unknown Wireguard Services
+  set_fact:
+    unknown_wg_services: "{{ 
+        ansible_facts.services.keys() 
+      | select('match', '^wg-quick@dn42.*$') 
+      | difference(peerings.keys() | map('format', 'wg-quick@' + wireguard_peer_prefix + '{}.service'))
+    }}"
+
+- name: Stop Unknown Wireguard Services
   service:
     name: "{{ item }}"
     state: stopped
-  with_items: "{{ ansible_facts.services.keys() | select('match', '^wg-quick@dn42_.*$') }}"
-  tags: adding_peers
+  with_items: "{{ unknown_wg_services }}"
 
-- name: Disable Live Wireguard Services
+- name: Disable Unknown Wireguard Services
   service:
     name: "{{ item }}"
     enabled: no
-  with_items: "{{ ansible_facts.services.keys() | select('match', '^wg-quick@dn42_.*$') }}"
-  tags: adding_peers
+  with_items: "{{ unknown_wg_services }}"
 
-- name: Start Wireguard
-  service:
-    name: "wg-quick@dn42_{{ item.key }}"
-    state: started
-    enabled: yes
-  with_dict: "{{ hostvars[inventory_hostname].peerings }}"
+- name: Reset Failure Status for Removed Services
+  shell: "systemctl reset-failed {{ item }}"
+  with_items: "{{ unknown_wg_services }}"
+
+- name: Enumerate Wireguard Configs
+  find:
+    paths: "{{ wireguard_conf_dir }}"
+  register: wireguard_configs
+
+- name: Remove Unknown Wireguard Configs
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items: "{{ 
+      wireguard_configs.files 
+    | map(attribute='path') 
+    | select('match', '.*' + wireguard_peer_prefix + '.*')
+    | difference(peerings.keys() | map('format', wireguard_conf_dir + '/' + wireguard_peer_prefix + '{}.conf')) 
+  }}"
+
+- name: Generate Wireguard Configs
+  template:
+    src: wg_tunnel.conf.j2
+    dest: "{{ wireguard_conf_dir }}/{{ wireguard_peer_prefix }}{{ item.key }}.conf"
+  with_dict: "{{ peerings }}"
   when: "'wireguard_tunnel' in item.value.keys()"
-  tags: adding_peers
+  register: generated_wireguard_configs
+
+- name: Reload Wireguard
+  service:
+    name: "wg-quick@{{ wireguard_peer_prefix }}{{ item.item.key }}"
+    state: reloaded
+    enabled: yes
+  with_items: "{{ generated_wireguard_configs.results }}"
+  when: item.changed

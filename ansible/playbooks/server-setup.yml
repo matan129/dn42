@@ -4,3 +4,8 @@
     - role: harden_ssh
     - role: configure_dn42_dns
     - role: configure_dn42_ca
+
+- hosts: bgp_servers
+  roles:
+    - role: install_bgp_server
+    - role: configure_sysctl

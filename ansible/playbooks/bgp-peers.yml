@@ -1,6 +1,4 @@
 ---
 - hosts: bgp_servers
   roles:
-    - role: install_bgp_server
-    - role: configure_sysctl
     - role: configure_bgp_peers

@@ -15,10 +15,6 @@ $(foreach p, $(PLAYBOOK_TARGETS), $(eval $(call add_play_target, play-$(p), .pla
 .play-%: write-vault-password
 	$(BASE_ANSIBLE_PLAYBOOK_COMMAND) $(ANSIBLE_PLAYBOOK_EXTRA_ARGS) playbooks/$*.yml
 
-.PHONY: play-add-bgp-peers
-play-add-bgp-peers: ANSIBLE_PLAYBOOK_EXTRA_ARGS=--tags adding_peers
-play-add-bgp-peers: .play-bgp
-
 .PHONY: print-pubkeys
 print-pubkeys: write-vault-password
 	@ansible bgp_servers -m debug -a "msg={{ wg_private_key }}" | grep msg | awk '{ print $$2 }' | tr -d '"' | wg pubkey

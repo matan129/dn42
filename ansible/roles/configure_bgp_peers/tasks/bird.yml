@@ -1,0 +1,34 @@
+---
+- name: Generate Main Bird Config
+  template:
+    src: bird.conf.j2
+    dest: /etc/bird/bird.conf
+  notify: Reconfigure Bird
+
+- name: Create Bird Peers Directory
+  file:
+    state: directory
+    path: "{{ bird2_peers_conf_dir }}"
+
+- name: Generate Peers Bird Config
+  template:
+    src: bird_peer.conf.j2
+    dest: "{{ bird2_peers_conf_dir }}/{{ item.key }}.conf"
+  with_dict: "{{ peerings }}"
+  notify: Reconfigure Bird
+
+- name: Enumerate Peers
+  find:
+    paths: "{{ bird2_peers_conf_dir }}"
+  register: existing_peers
+
+- name: Remove Unknown Peers
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items: "{{ 
+      existing_peers.files 
+    | map(attribute='path') 
+    | difference(peerings | map('format', bird2_peers_conf_dir + '/{}.conf')) 
+  }}"
+  notify: Reconfigure Bird

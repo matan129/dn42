@@ -1,10 +1,8 @@
 ---
-- hosts: bgp_servers,!looking_glass
+- hosts: bgp_servers
   roles:
-    - role: install_looking_glass
+    - role: install_looking_glass/proxy
 
 - hosts: looking_glass
   roles:
-    - role: install_looking_glass
-      vars:
-        with_lg_frontend: yes
+    - role: install_looking_glass/frontend

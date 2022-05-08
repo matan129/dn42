@@ -4,4 +4,4 @@
 
 - name: Configure Caddy Reverse Proxy
   include_tasks: caddy.yml
-  when: with_lg_frontend
+

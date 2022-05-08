@@ -23,3 +23,5 @@
       BIRDLG_NAVBAR_BRAND: "PASTEN-NET Looking Glass"
       BIRDLG_NET_SPECIFIC_MODE: "dn42"
       BIRDLG_PROTOCOL_FILTER: "bgp"
+      BIRDLG_WHOIS: whois.dn42
+      BIRDLG_DNS_INTERFACE: asn.dn42

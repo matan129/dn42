@@ -37,6 +37,7 @@
 - name: Reset Failure Status for Removed Services
   shell: "systemctl reset-failed {{ item }}"
   with_items: "{{ unknown_wg_services }}"
+  ignore_errors: yes
 
 - name: Enumerate Wireguard Configs
   find:

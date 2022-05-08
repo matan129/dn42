@@ -1,8 +1,13 @@
 ---
-# TODO use some dynamic solution
 clients:
-  matan0:
+  # TODO use some dynamic solution. OpenVPN?
+  dumb_vpn0:
     remote_addr: 172.23.178.98
     wireguard_tunnel:
       listen_port: 61666
+      peer_pub_key: PvcMLCrjjRX81w9ECGvRWm5p4l1Tc+wUds0q3+MN8X8=
+  dumb_vpn1:
+    remote_addr: 172.23.178.99
+    wireguard_tunnel:
+      listen_port: 61667
       peer_pub_key: PvcMLCrjjRX81w9ECGvRWm5p4l1Tc+wUds0q3+MN8X8=

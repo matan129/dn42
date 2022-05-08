@@ -30,7 +30,8 @@ If you want to run this repo for your own AS, you'll have to change these files:
 * [as.yml](https://github.com/matan129/dn42/blob/master/ansible/group_vars/all/as.yml) - holds your ASN and your CIDR blocks.
 * [peers.yml](https://github.com/matan129/dn42/blob/master/ansible/host_vars/spanner/peers.yml) & [spanner.yml](https://github.com/matan129/dn42/blob/master/ansible/host_vars/spanner/spanner.yml) - `internal_ip` is the DN42 IP of your node. The rest is details about the peered ASes. 
 * [wireguard.yml](https://github.com/matan129/dn42/blob/master/ansible/host_vars/spanner/wireguard.yml) - use your private Wireguard key (all the peers are configured with the corresponding public key).
-* [dn42_deploy](https://github.com/matan129/dn42/blob/master/ansible/roles/clone_registry/files/dn42_deploy) - this is an SSH key that's used to clone the [DN42 registry](https://git.dn42.dev/). The clone is used to generate ROA files for Bird. So, sign up for the registry and use your own SSH key.
+* ~~[dn42_deploy](https://github.com/matan129/dn42/blob/master/ansible/roles/clone_registry/files/dn42_deploy) - this is an SSH key that's used to clone the [DN42 registry](https://git.dn42.dev/). The clone is used to generate ROA files for Bird. So, sign up for the registry and use your own SSH key.~~
+  Currently, we use Burble's ROA endpoint so this key is not needed for now.
 
 Use `ansible-vault` to encrypt the private keys. 
 

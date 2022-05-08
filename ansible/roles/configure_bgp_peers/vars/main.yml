@@ -2,5 +2,4 @@
 bird2_peers_conf_dir: /etc/bird/peers
 bird2_roa_dir: /var/bird/roa
 bird2_roa_ipv4_file: "{{ bird2_roa_dir }}/roa_dn42_ipv4.conf"
-bird2_roa_ipv4_generator_script_path: "{{ bird2_roa_dir }}/generate_roa_ipv4.sh"
-bird2_roa_ipv4_generator_command: "/usr/bin/bash {{ bird2_roa_ipv4_generator_script_path }} {{ dn42_registry_repo_path }} {{ bird2_roa_ipv4_file }}"
+bird2_roa_ipv4_generator_command: "wget -qO {{ bird2_roa_ipv4_file }} https://dn42.burble.com/roa/dn42_roa_bird2_4.conf"

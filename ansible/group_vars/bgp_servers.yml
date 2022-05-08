@@ -1,2 +1,3 @@
 ---
 dn42_registry_repo_path: "/var/dn42/registry"
+wireguard_conf_dir: /etc/wireguard

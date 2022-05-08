@@ -1,0 +1,10 @@
+[Interface]
+PrivateKey = {{ wg_private_key }}
+ListenPort = {{ item.value.wireguard_tunnel.listen_port }}
+
+[Peer]
+{% if item.value.wireguard_tunnel.peer_preshared_key is defined %}
+PresharedKey = {{ item.value.wireguard_tunnel.peer_preshared_key }}
+{% endif %}
+PublicKey = {{ item.value.wireguard_tunnel.peer_pub_key }}
+AllowedIPs = {{ item.value.remote_addr }}

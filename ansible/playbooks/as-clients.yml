@@ -1,0 +1,4 @@
+---
+- hosts: bgp_servers
+  roles:
+    - role: configure_as_clients

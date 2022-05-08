@@ -1,0 +1,8 @@
+---
+# TODO use some dynamic solution
+clients:
+  matan0:
+    remote_addr: 172.23.178.98
+    wireguard_tunnel:
+      listen_port: 61666
+      peer_pub_key: PvcMLCrjjRX81w9ECGvRWm5p4l1Tc+wUds0q3+MN8X8=

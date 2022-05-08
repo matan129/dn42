@@ -12,8 +12,8 @@
   set_fact:
     unknown_wg_services: "{{ 
         ansible_facts.services.keys() 
-      | select('match', '^wg-quick@' + wireguard_peer_prefix + '.*$') 
-      | difference(peerings.keys() | map('format', 'wg-quick@' + wireguard_peer_prefix + '{}.service'))
+      | select('match', '^wg-quick@' + wireguard_client_prefix + '.*$') 
+      | difference(clients.keys() | map('format', 'wg-quick@' + wireguard_client_prefix + '{}.service'))
     }}"
 
 - name: Stop Unknown Wireguard Services
@@ -44,21 +44,21 @@
   with_items: "{{ 
       wireguard_configs.files 
     | map(attribute='path') 
-    | select('match', '.*' + wireguard_peer_prefix + '.*')
-    | difference(peerings.keys() | map('format', wireguard_conf_dir + '/' + wireguard_peer_prefix + '{}.conf')) 
+    | select('match', '.*' + wireguard_client_prefix + '.*')
+    | difference(clients.keys() | map('format', wireguard_conf_dir + '/' + wireguard_client_prefix + '{}.conf')) 
   }}"
 
 - name: Generate Wireguard Configs
   template:
     src: wg_tunnel.conf.j2
-    dest: "{{ wireguard_conf_dir }}/{{ wireguard_peer_prefix }}{{ item.key }}.conf"
-  with_dict: "{{ peerings }}"
+    dest: "{{ wireguard_conf_dir }}/{{ wireguard_client_prefix }}{{ item.key }}.conf"
+  with_dict: "{{ clients }}"
   when: "'wireguard_tunnel' in item.value.keys()"
   register: generated_wireguard_configs
 
 - name: Reload Wireguard
   service:
-    name: "wg-quick@{{ wireguard_peer_prefix }}{{ item.item.key }}"
+    name: "wg-quick@{{ wireguard_client_prefix }}{{ item.item.key }}"
     state: reloaded
     enabled: yes
   with_items: "{{ generated_wireguard_configs.results }}"
